@@ -9,6 +9,7 @@ namespace Question_1
         public string Title;
         public string Author;
         public int Year;
+
        public q1_Book(string title, string author, int year)
         {
             Title = title;
@@ -23,26 +24,29 @@ namespace Question_1
         public q1_Node? Parent; //can be null if node is root node i.e. no parent node
         public q1_Node? LeftChild; //can be null if node does not have a left child
         public q1_Node? RightChild; //can be null if node does not have a right child
+        public int Height;
 
-        public q1_Node(q1_Book value, q1_Node? parent, q1_Node? leftChild, q1_Node? rightChild)
+        public q1_Node(q1_Book value, q1_Node? parent, q1_Node? leftChild, q1_Node? rightChild, int height)
         {
             Value = value;
             Parent = parent;
             LeftChild = leftChild;
             RightChild = rightChild;
+            Height = height;
         }
     }
 
     public class q1_BookTree
     {
-        private q1_Node rootNode;
+        private q1_Node? rootNode;
         public void q1_InsertBook(q1_Book book)
         {
-            q1_Node newNode = new q1_Node(book, null, null, null);
+            q1_Node newNode = new q1_Node(book, null, null, null, 0);
 
             if (rootNode == null)
             {
                 rootNode = newNode;
+                return;
             }
             else
             {
@@ -52,7 +56,7 @@ namespace Question_1
                 {
                     if (newNode.Value.Year <= tempNode.Value.Year) //if book year value of new node is less or equal to book year value of temparary node
                     {
-                        if (tempNode.LeftChild == null) // tempNode's left child is null then we at end and can store new node as left child
+                        if (tempNode.LeftChild == null) // tempNode's left child is null then we are at end and can store new node as left child
                         {
                             newNode.Parent = tempNode; //set new node's parent to that of temp node
                             tempNode.LeftChild = newNode;
@@ -77,6 +81,27 @@ namespace Question_1
                         }
                     }
                 }
+            }
+
+            q1_Node nodeHeightChange = newNode;
+
+            while (nodeHeightChange.Parent != null)
+            {
+                nodeHeightChange = nodeHeightChange.Parent;
+
+                int leftHeight = -1; 
+                if (nodeHeightChange.LeftChild != null)
+                {
+                    leftHeight = nodeHeightChange.LeftChild.Height;
+                }
+
+                int rightHeight = -1;
+                if (nodeHeightChange.RightChild != null)
+                {
+                    rightHeight = nodeHeightChange.RightChild.Height;
+                }
+
+                nodeHeightChange.Height = Math.Max(leftHeight, rightHeight) + 1;
             }
         }
 
@@ -107,7 +132,7 @@ namespace Question_1
             {
                 return;
             }
-            Console.WriteLine($"\nParent: {toPrintNode.Value.Year}");
+            Console.WriteLine($"\nParent: {toPrintNode.Value.Year}, height: {toPrintNode.Height}");
 
             if (toPrintNode.LeftChild == null && toPrintNode.RightChild == null)
             {
@@ -115,15 +140,15 @@ namespace Question_1
             }
             else if (toPrintNode.LeftChild == null && toPrintNode.RightChild != null)
             {
-                Console.Write($"Left Child of {toPrintNode.Value.Year}: NULL ------- Right Child of {toPrintNode.Value.Year}: {toPrintNode.RightChild.Value.Year}\n");
+                Console.Write($"Left Child of {toPrintNode.Value.Year}: NULL ------- Right Child of {toPrintNode.Value.Year}: {toPrintNode.RightChild.Value.Year}, height: {toPrintNode.RightChild.Height}\n");
             }
             else if (toPrintNode.LeftChild != null && toPrintNode.RightChild == null)
             {
-                Console.Write($"Left Child of {toPrintNode.Value.Year}: {toPrintNode.LeftChild.Value.Year} ------- Right Child of {toPrintNode.Value.Year}: NUll");
+                Console.Write($"Left Child of {toPrintNode.Value.Year}: {toPrintNode.LeftChild.Value.Year}, height: {toPrintNode.LeftChild.Height} ------- Right Child of {toPrintNode.Value.Year}: NUll");
             }
             else
             {
-                Console.Write($"Left Child of {toPrintNode.Value.Year}: {toPrintNode.LeftChild.Value.Year} ------- Right Child of {toPrintNode.Value.Year}: {toPrintNode.RightChild.Value.Year}\n");
+                Console.Write($"Left Child of {toPrintNode.Value.Year}: {toPrintNode.LeftChild.Value.Year}, height: {toPrintNode.LeftChild.Height} ------- Right Child of {toPrintNode.Value.Year}: {toPrintNode.RightChild.Value.Year}, height: {toPrintNode.RightChild.Height}\n");
             }
             PrintParentPlusChildren(toPrintNode.LeftChild);
             PrintParentPlusChildren(toPrintNode.RightChild);
