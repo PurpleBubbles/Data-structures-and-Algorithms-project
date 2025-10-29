@@ -489,6 +489,23 @@ namespace Question_1
                 $"Book Author: {nodeChecked.Value.Author}\n");
         }
 
+        public void q2_DisplayMostRecentBook()
+        {
+            q1_Node mostRecentNode = rootNode; //have to start somewhere
+
+            if (mostRecentNode == null)
+            {
+                Console.WriteLine($"\n------------There are no books stored in the AVL Tree at this moment------------\n");
+                return;
+            }
+            while (mostRecentNode.RightChild != null)
+            {
+                mostRecentNode = mostRecentNode.RightChild;
+            }
+            Console.WriteLine($"\n------------Most Recently Published Book)------------\n" +
+                $"{mostRecentNode.Value.Title}, published in {mostRecentNode.Value.Year}.\n");
+        }
+
         public void DebuggingPrintTree()
         {
             Console.WriteLine($"----Printed out AVL Book Tree----");
@@ -622,7 +639,7 @@ namespace Question_1
                 }
                 else  if(userInput == 3)
                 {
-
+                    bookTree.q2_DisplayMostRecentBook();
                 }
                 else if(userInput == 4)
                 {
