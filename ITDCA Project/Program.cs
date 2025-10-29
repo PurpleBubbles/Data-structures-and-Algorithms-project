@@ -1,4 +1,5 @@
 ﻿using Question_1;
+using System.Diagnostics.Metrics;
 using System.Xml.Linq;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -267,7 +268,7 @@ namespace Question_1
                     leftRightHeight = nodeToBalance.LeftChild.RightChild.Height;
                 }
 
-                if (leftLeftHeight > leftRightHeight) //left-left imbalance
+                if (leftLeftHeight >= leftRightHeight) //left-left imbalance
                 {
                     q1_RightRotate(nodeToBalance);
                 }
@@ -421,6 +422,73 @@ namespace Question_1
             Console.WriteLine("DOne rotating");
         }
 
+        public void q2_InOderTraversal()
+        {
+            if (rootNode == null)
+            {
+                Console.WriteLine($"No Books to print as tree is empty");
+                return;
+            }
+            else
+            {
+                q2_InOderTraversalRecursion(rootNode);
+            }
+        }
+
+        private void q2_InOderTraversalRecursion(q1_Node node)
+        {
+            if (node == null) //kill switch
+            {
+                return;
+            }
+            q2_InOderTraversalRecursion(node.LeftChild);
+            Console.WriteLine($"{node.Value.Title}");
+            q2_InOderTraversalRecursion(node.RightChild);
+        }
+
+        public void q2_SearchBookByYear(int bookYear)
+        {
+            if (rootNode == null)
+            {
+                Console.WriteLine($"\n There are no books stored in AVL Tree at this moment");
+                return;
+            }
+
+            q1_Node nodeChecked = rootNode;
+
+            while (nodeChecked.Value.Year != bookYear) //loop through books till year match is found or end of tree reached
+            {
+                if (bookYear <= nodeChecked.Value.Year)
+                {
+                    if (nodeChecked.LeftChild != null)
+                    {
+                        nodeChecked = nodeChecked.LeftChild;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\n No books stored in AVL Tree match the book year({bookYear}) provided");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (nodeChecked.RightChild != null) //value looked for can not be stored in tree
+                    {
+                        nodeChecked = nodeChecked.RightChild;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\n No books stored in AVL Tree match the book year({bookYear}) provided");
+                        return;
+                    }
+                }
+            }
+            Console.WriteLine($"\n Book match found of the book year({bookYear}) provided: \n" +
+                $"{nodeChecked.Value.Title},");
+
+
+        }
+
         public void PrintTree()
         {
             Console.WriteLine($"----Printed out AVL Book Tree----");
@@ -436,6 +504,7 @@ namespace Question_1
         {
             if (toPrintNode == null)
             {
+                Console.WriteLine($"No books to print");
                 return;
             }
             Console.WriteLine($"\nParent: {toPrintNode.Value.Year}, height: {toPrintNode.Height}");
@@ -499,11 +568,17 @@ namespace Question_1
                 Console.WriteLine("\n_____________________________________");
             }
 
-            q1_Book deleteBook = new q1_Book("The Da Vinci Code", "Dan Brown", 2003);
+/*            q1_Book deleteBook = new q1_Book("1984", "George Orwell", 1949);
 
             bookTree.q1_DeleteBook(deleteBook);
 
             bookTree.PrintTree();
+*/
+            bookTree.q2_InOderTraversal();
+
+            int userInput = 1998;
+
+            bookTree.q2_SearchBookByYear(userInput);
         }
     }
 }
