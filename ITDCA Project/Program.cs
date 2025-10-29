@@ -119,7 +119,19 @@ namespace Question_1
             {
                 checkNodeBalance = checkNodeBalance.Parent;
 
-                if ((checkNodeBalance.LeftChild.Height - checkNodeBalance.RightChild.Height) >= 2 || (checkNodeBalance.LeftChild.Height - checkNodeBalance.RightChild.Height) <= -2)
+                int leftHeight = -1;
+                if (checkNodeBalance.LeftChild != null)
+                {
+                    leftHeight = checkNodeBalance.LeftChild.Height;
+                }
+
+                int rightHeight = -1;
+                if (checkNodeBalance.RightChild != null)
+                {
+                    rightHeight = checkNodeBalance.RightChild.Height;
+                }
+
+                if ((leftHeight - rightHeight) >= 2 || (leftHeight - rightHeight) <= -2)
                 {
                     //unbalanced make balanced
                     balanceNode(checkNodeBalance);
@@ -130,9 +142,33 @@ namespace Question_1
         
         private void balanceNode(q1_Node nodeToBalance)
         {
-            if (nodeToBalance.LeftChild.Height > nodeToBalance.RightChild.Height) //left-? imbalance
+            int leftHeight = -1;
+            if (nodeToBalance.LeftChild != null)
             {
-                if (nodeToBalance.LeftChild.LeftChild.Height > nodeToBalance.LeftChild.RightChild.Height) //left-left imbalance
+                leftHeight = nodeToBalance.LeftChild.Height;
+            }
+
+            int rightHeight = -1;
+            if (nodeToBalance.RightChild != null)
+            {
+                rightHeight = nodeToBalance.RightChild.Height;
+            }
+
+            if (leftHeight > rightHeight) //left-? imbalance
+            {
+                int leftLeftHeight = -1;
+                if (nodeToBalance.LeftChild.LeftChild != null)
+                {
+                    leftLeftHeight = nodeToBalance.LeftChild.LeftChild.Height;
+                }
+
+                int leftRightHeight = -1;
+                if (nodeToBalance.LeftChild.RightChild != null)
+                {
+                    leftRightHeight = nodeToBalance.LeftChild.RightChild.Height;
+                }
+
+                if (leftLeftHeight > leftRightHeight) //left-left imbalance
                 {
                     RightRotate(nodeToBalance);
                 }
@@ -144,7 +180,19 @@ namespace Question_1
             }
             else //right-? imbalance
             {
-                if(nodeToBalance.RightChild.LeftChild.Height > nodeToBalance.RightChild.RightChild.Height) //right-left imbalance
+                int rightLeftHeight = -1;
+                if (nodeToBalance.RightChild.LeftChild != null)
+                {
+                    rightLeftHeight = nodeToBalance.RightChild.LeftChild.Height;
+                }
+
+                int rightRightHeight = -1;
+                if (nodeToBalance.RightChild.RightChild != null)
+                {
+                    rightRightHeight = nodeToBalance.RightChild.RightChild.Height;
+                }
+
+                if (rightLeftHeight > rightRightHeight) //right-left imbalance
                 {
                     RightRotate(nodeToBalance.RightChild);
                     LeftRotate(nodeToBalance);
@@ -186,39 +234,92 @@ namespace Question_1
         private void RightRotate(q1_Node nodeToBalance)
         {
             q1_Node imbalanceNode = nodeToBalance;
-            q1_Node? leftChildImbalanceNode = nodeToBalance.LeftChild;
+            q1_Node leftChildImbalanceNode = nodeToBalance.LeftChild;
             q1_Node? rightChildLeftChildImbalanceNode = nodeToBalance.LeftChild.RightChild;
+            q1_Node? parentImbalancedNode = nodeToBalance.Parent;
+
+            Console.WriteLine($"\nRotating right: {nodeToBalance.Value.Year}");
+
+            if (imbalanceNode == rootNode)
+            {
+                rootNode = leftChildImbalanceNode;
+                Console.WriteLine("Changing rootnode");
+            }
 
             //Change parent of imbalance node's leftchild
             leftChildImbalanceNode.Parent = imbalanceNode.Parent;
             //Change parent of imbalance node
             imbalanceNode.Parent = leftChildImbalanceNode;
             //Change parent of imbalance node's left child's right child
-            rightChildLeftChildImbalanceNode.Parent = imbalanceNode;
+            if (rightChildLeftChildImbalanceNode != null)//could not have a right child
+            {
+                rightChildLeftChildImbalanceNode.Parent = imbalanceNode;
+            }
             //Change left child of imbalanced node
             imbalanceNode.LeftChild = rightChildLeftChildImbalanceNode;
             //change right child of imbalaced node's left child
             leftChildImbalanceNode.RightChild = imbalanceNode;
 
+
+            if (parentImbalancedNode == null)
+            {
+                leftChildImbalanceNode.Parent = null;
+                
+            }
+            else if (parentImbalancedNode.LeftChild == imbalanceNode)
+            {
+                parentImbalancedNode.LeftChild = leftChildImbalanceNode;
+            }
+            else if (parentImbalancedNode.RightChild == imbalanceNode)
+            {
+                parentImbalancedNode.RightChild = leftChildImbalanceNode;
+            }
         }
 
         private void LeftRotate(q1_Node nodeToBalance) 
         {
             q1_Node imbalanceNode = nodeToBalance;
-            q1_Node? rightChildImbalanceNode = nodeToBalance.RightChild;
+            q1_Node rightChildImbalanceNode = nodeToBalance.RightChild;
             q1_Node? leftChildRightChildImbalanceNode = nodeToBalance.RightChild.LeftChild;
+            q1_Node? parentImbalancedNode = nodeToBalance.Parent;
+
+            Console.WriteLine($"\nRotating left: {nodeToBalance.Value.Year}");
+
+            if (imbalanceNode == rootNode)
+            {
+                rootNode = rightChildImbalanceNode;
+                Console.WriteLine("Changing rootnode");
+            }
 
             //Change parent of imbalance node's rightchild
             rightChildImbalanceNode.Parent = imbalanceNode.Parent;
             //Change parent of imbalance node
             imbalanceNode.Parent = rightChildImbalanceNode;
             //Change parent of imbalance node's right child's left child
-            leftChildRightChildImbalanceNode.Parent = imbalanceNode;
+            if (leftChildRightChildImbalanceNode != null) //could not have a left child
+            {
+                leftChildRightChildImbalanceNode.Parent = imbalanceNode;
+            }
             //Change right child of imbalanced node
             imbalanceNode.RightChild = leftChildRightChildImbalanceNode;
             //change left child of imbalaced node's right child
             rightChildImbalanceNode.LeftChild = imbalanceNode;
 
+            if(parentImbalancedNode == null)
+            {
+                rightChildImbalanceNode.Parent = null;
+            }
+            if (parentImbalancedNode.LeftChild == imbalanceNode)
+            {
+                parentImbalancedNode.LeftChild = rightChildImbalanceNode;
+            }
+
+            if(parentImbalancedNode.RightChild == imbalanceNode)
+            {
+                parentImbalancedNode.RightChild = rightChildImbalanceNode;
+            }
+
+            Console.WriteLine("DOne rotating");
         }
 
         public void PrintTree()
@@ -295,10 +396,9 @@ namespace Question_1
             foreach (q1_Book book in treeBooks)
             {
                 bookTree.q1_InsertBook(book);
+                bookTree.PrintTree();
+                Console.WriteLine("\n_____________________________________");
             }
-
-            bookTree.PrintTree();
-
         }
     }
 }
