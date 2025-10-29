@@ -82,7 +82,7 @@ namespace Question_1
                     }
                 }
             }
-
+            // change heights of parent nodes after insertion of new leaf node
             q1_Node nodeHeightChange = newNode;
 
             while (nodeHeightChange.Parent != null)
@@ -103,6 +103,8 @@ namespace Question_1
 
                 nodeHeightChange.Height = Math.Max(leftHeight, rightHeight) + 1;
             }
+
+            q1_BalanceAncestors(newNode); //now to check if tree still balanced and if not balance it
         }
 
         public void q1_DeleteBook()
@@ -110,11 +112,115 @@ namespace Question_1
 
         }
 
-        private void q1_BalanceBookTree()
+        private void q1_BalanceAncestors(q1_Node checkNodeBalance)
         {
 
+            while (checkNodeBalance.Parent != null)
+            {
+                checkNodeBalance = checkNodeBalance.Parent;
+
+                if ((checkNodeBalance.LeftChild.Height - checkNodeBalance.RightChild.Height) >= 2 || (checkNodeBalance.LeftChild.Height - checkNodeBalance.RightChild.Height) <= -2)
+                {
+                    //unbalanced make balanced
+                    balanceNode(checkNodeBalance);
+                    break;
+                }
+            }
         }
         
+        private void balanceNode(q1_Node nodeToBalance)
+        {
+            if (nodeToBalance.LeftChild.Height > nodeToBalance.RightChild.Height) //left-? imbalance
+            {
+                if (nodeToBalance.LeftChild.LeftChild.Height > nodeToBalance.LeftChild.RightChild.Height) //left-left imbalance
+                {
+                    RightRotate(nodeToBalance);
+                }
+                else //left-right imbalance
+                {
+                    LeftRotate(nodeToBalance.LeftChild);
+                    RightRotate(nodeToBalance);
+                }
+            }
+            else //right-? imbalance
+            {
+                if(nodeToBalance.RightChild.LeftChild.Height > nodeToBalance.RightChild.RightChild.Height) //right-left imbalance
+                {
+                    RightRotate(nodeToBalance.RightChild);
+                    LeftRotate(nodeToBalance);
+                }
+                else //right-right imbalance
+                {
+                    LeftRotate(nodeToBalance);
+                }
+            }
+
+            RecalculateNodeHeights(rootNode);
+        }
+
+        private void RecalculateNodeHeights(q1_Node? calculateHeightNode)
+        {
+            if (calculateHeightNode == null) //recursion termination point
+            {
+                return;
+            }
+            RecalculateNodeHeights(calculateHeightNode.LeftChild);
+            RecalculateNodeHeights(calculateHeightNode.RightChild);
+
+            int leftHeight = -1;
+            if (calculateHeightNode.LeftChild != null)
+            {
+                leftHeight = calculateHeightNode.LeftChild.Height;
+            }
+
+            int rightHeight = -1;
+            if (calculateHeightNode.RightChild != null)
+            {
+                rightHeight = calculateHeightNode.RightChild.Height;
+            }
+
+            calculateHeightNode.Height = Math.Max(leftHeight, rightHeight) + 1;
+
+        }
+
+        private void RightRotate(q1_Node nodeToBalance)
+        {
+            q1_Node imbalanceNode = nodeToBalance;
+            q1_Node? leftChildImbalanceNode = nodeToBalance.LeftChild;
+            q1_Node? rightChildLeftChildImbalanceNode = nodeToBalance.LeftChild.RightChild;
+
+            //Change parent of imbalance node's leftchild
+            leftChildImbalanceNode.Parent = imbalanceNode.Parent;
+            //Change parent of imbalance node
+            imbalanceNode.Parent = leftChildImbalanceNode;
+            //Change parent of imbalance node's left child's right child
+            rightChildLeftChildImbalanceNode.Parent = imbalanceNode;
+            //Change left child of imbalanced node
+            imbalanceNode.LeftChild = rightChildLeftChildImbalanceNode;
+            //change right child of imbalaced node's left child
+            leftChildImbalanceNode.RightChild = imbalanceNode;
+
+        }
+
+        private void LeftRotate(q1_Node nodeToBalance) 
+        {
+            q1_Node imbalanceNode = nodeToBalance;
+            q1_Node? rightChildImbalanceNode = nodeToBalance.RightChild;
+            q1_Node? leftChildRightChildImbalanceNode = nodeToBalance.RightChild.LeftChild;
+
+            //Change parent of imbalance node's rightchild
+            rightChildImbalanceNode.Parent = imbalanceNode.Parent;
+            //Change parent of imbalance node
+            imbalanceNode.Parent = rightChildImbalanceNode;
+            //Change parent of imbalance node's right child's left child
+            leftChildRightChildImbalanceNode.Parent = imbalanceNode;
+            //Change right child of imbalanced node
+            imbalanceNode.RightChild = leftChildRightChildImbalanceNode;
+            //change left child of imbalaced node's right child
+            rightChildImbalanceNode.LeftChild = imbalanceNode;
+
+        }
+
         public void PrintTree()
         {
             Console.WriteLine($"----Printed out AVL Book Tree----");
