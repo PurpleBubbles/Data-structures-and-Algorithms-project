@@ -450,7 +450,7 @@ namespace Question_1
         {
             if (rootNode == null)
             {
-                Console.WriteLine($"\n There are no books stored in AVL Tree at this moment");
+                Console.WriteLine($"\n------------There are no books stored in the AVL Tree at this moment------------\n");
                 return;
             }
 
@@ -466,7 +466,7 @@ namespace Question_1
                     }
                     else
                     {
-                        Console.WriteLine($"\n No books stored in AVL Tree match the book year({bookYear}) provided");
+                        Console.WriteLine($"\n------------No books stored in AVL Tree match the book year({bookYear}) provided------------\n");
                         return;
                     }
                 }
@@ -478,18 +478,18 @@ namespace Question_1
                     }
                     else
                     {
-                        Console.WriteLine($"\n No books stored in AVL Tree match the book year({bookYear}) provided");
+                        Console.WriteLine($"\n------------No books stored in AVL Tree match the book year({bookYear}) provided------------\n");
                         return;
                     }
                 }
             }
-            Console.WriteLine($"\n Book match found of the book year({bookYear}) provided: \n" +
-                $"{nodeChecked.Value.Title},");
-
-
+            Console.WriteLine($"\n------------Book match found ({bookYear})------------\n" +
+                $"Book year: {nodeChecked.Value.Year}\n" +
+                $"Book Title: {nodeChecked.Value.Title}\n" +
+                $"Book Author: {nodeChecked.Value.Author}\n");
         }
 
-        public void PrintTree()
+        public void DebuggingPrintTree()
         {
             Console.WriteLine($"----Printed out AVL Book Tree----");
 
@@ -497,10 +497,10 @@ namespace Question_1
 
             Console.WriteLine($"Root node: {printNode.Value.Year}");
 
-            PrintParentPlusChildren(printNode);
+            DebuggingPrintParentPlusChildren(printNode);
         }
 
-        private void PrintParentPlusChildren(q1_Node toPrintNode)
+        private void DebuggingPrintParentPlusChildren(q1_Node toPrintNode)
         {
             if (toPrintNode == null)
             {
@@ -525,8 +525,8 @@ namespace Question_1
             {
                 Console.Write($"Left Child of {toPrintNode.Value.Year}: {toPrintNode.LeftChild.Value.Year}, height: {toPrintNode.LeftChild.Height} ------- Right Child of {toPrintNode.Value.Year}: {toPrintNode.RightChild.Value.Year}, height: {toPrintNode.RightChild.Height}\n");
             }
-            PrintParentPlusChildren(toPrintNode.LeftChild);
-            PrintParentPlusChildren(toPrintNode.RightChild);
+            DebuggingPrintParentPlusChildren(toPrintNode.LeftChild);
+            DebuggingPrintParentPlusChildren(toPrintNode.RightChild);
         }
     }
 
@@ -534,7 +534,7 @@ namespace Question_1
     {
         static void Main(string[] args)
         {
-            q1_Book[] treeBooks = new q1_Book[]
+            q1_Book[] booksAdd = new q1_Book[]
             {
                 new q1_Book("The Silent Patient", "Alex Michaelides", 2019),
                 new q1_Book("The Great Gatsby", "F. Scott Fitzgerald",1925),
@@ -560,25 +560,83 @@ namespace Question_1
 
             q1_BookTree bookTree = new q1_BookTree(); //instantiate a new object of the booktree class
 
-            //loop through each element in the treeBooks array and call the insert book method for each book element
-            foreach (q1_Book book in treeBooks)
+            foreach (q1_Book book in booksAdd)
             {
                 bookTree.q1_InsertBook(book);
-                bookTree.PrintTree();
-                Console.WriteLine("\n_____________________________________");
             }
 
-/*            q1_Book deleteBook = new q1_Book("1984", "George Orwell", 1949);
+            while (true)
+            {
+                Console.WriteLine($"\n------------Monje's AVL Book Tree------------\n" +
+                    $"1. In Order Traversal\n" +
+                    $"2. Search for book by year\n" +
+                    $"3. Display book most recently published\n" +
+                    $"4. Display the number of book stored in tree\n" +
+                    $"5. End Application");
 
-            bookTree.q1_DeleteBook(deleteBook);
+                Console.Write($"Please select a option (1-5): ");
+                int userInput = 0;
 
-            bookTree.PrintTree();
-*/
-            bookTree.q2_InOderTraversal();
+                try
+                {
+                    userInput = Convert.ToInt32(Console.ReadLine());
+                }
+                catch (Exception )
+                {
+                    Console.WriteLine($"\n------------INVALID USER INPUT (enter an integer value from 1 to 5 only)------------");
+                    continue;
+                }
 
-            int userInput = 1998;
+                if (userInput == 1)
+                {
+                    Console.WriteLine($"\n------------In Order Traversal------------\n");
+                    bookTree.q2_InOderTraversal();
+                }
+                else if (userInput == 2)
+                {
+                    Console.WriteLine($"\n------------Search by Year------------\n");
+                    Console.Write($"Please input a year value: ");
 
-            bookTree.q2_SearchBookByYear(userInput);
+                    int yearSearch = 0;
+
+                    try
+                    {
+                        yearSearch = Convert.ToInt32(Console.ReadLine());
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"\n------------INVALID USER INPUT (enter an INTEGER year value)------------");
+                        continue;
+                    }
+
+                    if (yearSearch < 0)
+                    {
+                        Console.WriteLine($"\n------------INVALID USER INPUT (enter an POSITIVE year value)------------");
+                        continue;
+                    }
+                    else
+                    {
+                        bookTree.q2_SearchBookByYear(yearSearch);
+                    }
+
+                }
+                else  if(userInput == 3)
+                {
+
+                }
+                else if(userInput == 4)
+                {
+
+                }
+                else if(userInput == 5)
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine($"\n------------INVALID USER INPUT (enter an integer value from 1 to 5 only)------------");
+                }
+            }
         }
     }
 }
