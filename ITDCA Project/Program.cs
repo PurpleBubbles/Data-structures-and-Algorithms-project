@@ -193,9 +193,16 @@ namespace Question_1
                     inOrderSuccessor.Parent.LeftChild = inOrderSuccessor.RightChild;
                     inOrderSuccessor.RightChild.Parent = inOrderSuccessor.Parent;
                 }
-                else
+                else 
                 {
-                    inOrderSuccessor.Parent.LeftChild = null;
+                    if (inOrderSuccessor.Parent.RightChild == inOrderSuccessor)
+                    {
+                        inOrderSuccessor.Parent.RightChild = null; //make the parent of the node to be deleted point to null
+                    }
+                    else
+                    {
+                        inOrderSuccessor.Parent.LeftChild = null; //make the parent of the node to be deleted point to null
+                    }
                 }
 
                 q1_RecalculateNodeHeights(rootNode);
@@ -492,9 +499,11 @@ namespace Question_1
                 Console.WriteLine("\n_____________________________________");
             }
 
-            q1_Book deleteBook = new q1_Book("The Hobbit", "J.R.R. Tolkien", 1937);
+            q1_Book deleteBook = new q1_Book("The Da Vinci Code", "Dan Brown", 2003);
 
             bookTree.q1_DeleteBook(deleteBook);
+
+            bookTree.PrintTree();
         }
     }
 }
