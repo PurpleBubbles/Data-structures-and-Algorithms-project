@@ -107,9 +107,101 @@ namespace Question_1
             q1_BalanceAncestors(newNode); //now to check if tree still balanced and if not balance it
         }
 
-        public void q1_DeleteBook()
+        public void q1_DeleteBook(q1_Book deleteBook)
         {
+            if (rootNode == null)
+            {
+                Console.WriteLine($"\n No books stored in AVL Tree at this moment");
+                return;
+            }
 
+            q1_Node nodeChecked = rootNode;
+
+            while (nodeChecked.Value.Year != deleteBook.Year && nodeChecked.Value.Title != deleteBook.Title && nodeChecked.Value.Author != deleteBook.Author) //loop through books till match is found or end of tree reached
+            {
+                if (deleteBook.Year <= nodeChecked.Value.Year)
+                {
+                    if(nodeChecked.LeftChild != null) //value looked for can not be stored in tree
+                    {
+                        nodeChecked = nodeChecked.LeftChild;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\n No books stored in AVL Tree match the book details provided");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (nodeChecked.RightChild != null) //value looked for can not be stored in tree
+                    {
+                        nodeChecked = nodeChecked.RightChild;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\n No books stored in AVL Tree match the book details provided");
+                        return;
+                    }
+                }
+            }
+
+            //will be selecting the in order succesor when deleting any nodes (smallest year value in right subtree of node being deleted)
+            q1_Node nodeToDelete = nodeChecked;
+            q1_Node? inOrderSuccessor = nodeChecked.RightChild; //temp value for now
+
+            if (nodeToDelete == rootNode && nodeToDelete.LeftChild == null && nodeToDelete.RightChild == null)
+            {
+                rootNode = null;
+                Console.WriteLine($"\n Root node was deleted it was also the only value stored in the AVL tree");
+            }
+            else if (nodeToDelete.RightChild == null)
+            {
+                if (nodeToDelete.LeftChild == null) //node to delete is a leaf i.e. no children
+                {
+                    if (nodeToDelete.Parent.RightChild == nodeToDelete)
+                    {
+                        nodeToDelete.Parent.RightChild = null; //make the parent of the node to be deleted point to null
+                    }
+                    else
+                    {
+                        nodeToDelete.Parent.LeftChild = null; //make the parent of the node to be deleted point to null
+                    }
+
+                    q1_RecalculateNodeHeights(rootNode);
+                    q1_BalanceAncestors(nodeToDelete.Parent);
+                }
+                else //no right children only one left child
+                {
+                    nodeToDelete.Value = nodeToDelete.LeftChild.Value;
+                    nodeToDelete.LeftChild = null;
+
+                    q1_RecalculateNodeHeights(rootNode);
+                    q1_BalanceAncestors(nodeToDelete);
+                }
+            }
+            else
+            {
+                while (inOrderSuccessor.LeftChild != null)
+                {
+                    inOrderSuccessor = inOrderSuccessor.LeftChild;
+                }
+
+                nodeToDelete.Value = inOrderSuccessor.Value;
+
+                if (inOrderSuccessor.RightChild != null) //if left most node has a right child
+                {
+                    inOrderSuccessor.Parent.LeftChild = inOrderSuccessor.RightChild;
+                    inOrderSuccessor.RightChild.Parent = inOrderSuccessor.Parent;
+                }
+                else
+                {
+                    inOrderSuccessor.Parent.LeftChild = null;
+                }
+
+                q1_RecalculateNodeHeights(rootNode);
+                q1_BalanceAncestors(inOrderSuccessor);
+
+            }
         }
 
         private void q1_BalanceAncestors(q1_Node checkNodeBalance)
@@ -134,13 +226,13 @@ namespace Question_1
                 if ((leftHeight - rightHeight) >= 2 || (leftHeight - rightHeight) <= -2)
                 {
                     //unbalanced make balanced
-                    balanceNode(checkNodeBalance);
+                    q1_balanceNode(checkNodeBalance);
                     break;
                 }
             }
         }
         
-        private void balanceNode(q1_Node nodeToBalance)
+        private void q1_balanceNode(q1_Node nodeToBalance)
         {
             int leftHeight = -1;
             if (nodeToBalance.LeftChild != null)
@@ -170,12 +262,12 @@ namespace Question_1
 
                 if (leftLeftHeight > leftRightHeight) //left-left imbalance
                 {
-                    RightRotate(nodeToBalance);
+                    q1_RightRotate(nodeToBalance);
                 }
                 else //left-right imbalance
                 {
-                    LeftRotate(nodeToBalance.LeftChild);
-                    RightRotate(nodeToBalance);
+                    q1_LeftRotate(nodeToBalance.LeftChild);
+                    q1_RightRotate(nodeToBalance);
                 }
             }
             else //right-? imbalance
@@ -194,26 +286,26 @@ namespace Question_1
 
                 if (rightLeftHeight > rightRightHeight) //right-left imbalance
                 {
-                    RightRotate(nodeToBalance.RightChild);
-                    LeftRotate(nodeToBalance);
+                    q1_RightRotate(nodeToBalance.RightChild);
+                    q1_LeftRotate(nodeToBalance);
                 }
                 else //right-right imbalance
                 {
-                    LeftRotate(nodeToBalance);
+                    q1_LeftRotate(nodeToBalance);
                 }
             }
 
-            RecalculateNodeHeights(rootNode);
+            q1_RecalculateNodeHeights(rootNode);
         }
 
-        private void RecalculateNodeHeights(q1_Node? calculateHeightNode)
+        private void q1_RecalculateNodeHeights(q1_Node? calculateHeightNode)
         {
             if (calculateHeightNode == null) //recursion termination point
             {
                 return;
             }
-            RecalculateNodeHeights(calculateHeightNode.LeftChild);
-            RecalculateNodeHeights(calculateHeightNode.RightChild);
+            q1_RecalculateNodeHeights(calculateHeightNode.LeftChild);
+            q1_RecalculateNodeHeights(calculateHeightNode.RightChild);
 
             int leftHeight = -1;
             if (calculateHeightNode.LeftChild != null)
@@ -231,7 +323,7 @@ namespace Question_1
 
         }
 
-        private void RightRotate(q1_Node nodeToBalance)
+        private void q1_RightRotate(q1_Node nodeToBalance)
         {
             q1_Node imbalanceNode = nodeToBalance;
             q1_Node leftChildImbalanceNode = nodeToBalance.LeftChild;
@@ -276,7 +368,7 @@ namespace Question_1
             }
         }
 
-        private void LeftRotate(q1_Node nodeToBalance) 
+        private void q1_LeftRotate(q1_Node nodeToBalance) 
         {
             q1_Node imbalanceNode = nodeToBalance;
             q1_Node rightChildImbalanceNode = nodeToBalance.RightChild;
@@ -399,6 +491,10 @@ namespace Question_1
                 bookTree.PrintTree();
                 Console.WriteLine("\n_____________________________________");
             }
+
+            q1_Book deleteBook = new q1_Book("The Hobbit", "J.R.R. Tolkien", 1937);
+
+            bookTree.q1_DeleteBook(deleteBook);
         }
     }
 }
