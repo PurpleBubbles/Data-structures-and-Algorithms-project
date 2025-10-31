@@ -506,6 +506,37 @@ namespace Question_1
                 $"{mostRecentNode.Value.Title}, published in {mostRecentNode.Value.Year}.\n");
         }
 
+        public void q2_DisplayNumberOfBooks()
+        {
+            if (rootNode == null)
+            {
+                Console.WriteLine($"\n------------Number of Books in AVL Tree------------\n" +
+                    $"Number of books = ZERO (no books in AVL tree)\n");
+                return;
+            }
+            else
+            {
+                int numBooks = q2_DisplayNumberOfBooksRecursion(rootNode);
+
+                Console.WriteLine($"\n------------Number of Books in AVL Tree------------\n" +
+                    $"Number of books = {numBooks}\n");
+            }
+        }
+
+        private int q2_DisplayNumberOfBooksRecursion(q1_Node node)
+        {
+            if (node == null) //kill switch
+            {
+                return 0;
+            }
+
+            int counter = 0;
+
+            counter += q2_DisplayNumberOfBooksRecursion(node.LeftChild);
+            counter += q2_DisplayNumberOfBooksRecursion(node.RightChild);
+            return counter + 1;
+        }
+
         public void DebuggingPrintTree()
         {
             Console.WriteLine($"----Printed out AVL Book Tree----");
@@ -577,6 +608,7 @@ namespace Question_1
 
             q1_BookTree bookTree = new q1_BookTree(); //instantiate a new object of the booktree class
 
+            //insert books into book tree one at a time
             foreach (q1_Book book in booksAdd)
             {
                 bookTree.q1_InsertBook(book);
@@ -589,9 +621,10 @@ namespace Question_1
                     $"2. Search for book by year\n" +
                     $"3. Display book most recently published\n" +
                     $"4. Display the number of book stored in tree\n" +
-                    $"5. End Application");
+                    $"5. Insert new book into AVL Tree\n" +
+                    $"6. Stop Application");
 
-                Console.Write($"Please select a option (1-5): ");
+                Console.Write($"Please select a option (1-6): ");
                 int userInput = 0;
 
                 try
@@ -600,23 +633,23 @@ namespace Question_1
                 }
                 catch (Exception )
                 {
-                    Console.WriteLine($"\n------------INVALID USER INPUT (enter an integer value from 1 to 5 only)------------");
+                    Console.WriteLine($"\n------------INVALID USER INPUT (enter an integer value from 1 to 6 only)------------");
                     continue;
                 }
 
-                if (userInput == 1)
+                if (userInput == 1) //call method to display books in-order(most left to right most book in tree)
                 {
                     Console.WriteLine($"\n------------In Order Traversal------------\n");
                     bookTree.q2_InOderTraversal();
                 }
-                else if (userInput == 2)
+                else if (userInput == 2) //call method to search for book that matches the year the user inputted
                 {
                     Console.WriteLine($"\n------------Search by Year------------\n");
                     Console.Write($"Please input a year value: ");
 
                     int yearSearch = 0;
 
-                    try
+                    try //try-catch block if user input was not an int value
                     {
                         yearSearch = Convert.ToInt32(Console.ReadLine());
                     }
@@ -626,32 +659,107 @@ namespace Question_1
                         continue;
                     }
 
-                    if (yearSearch < 0)
+                    if (yearSearch < 0) //if value negative also throw error
                     {
                         Console.WriteLine($"\n------------INVALID USER INPUT (enter an POSITIVE year value)------------");
                         continue;
                     }
-                    else
+                    else //call search book method
                     {
                         bookTree.q2_SearchBookByYear(yearSearch);
                     }
 
                 }
-                else  if(userInput == 3)
+                else  if(userInput == 3) //call method to find and display the book with the most recent publish date
                 {
                     bookTree.q2_DisplayMostRecentBook();
                 }
-                else if(userInput == 4)
+                else if(userInput == 4) //call method to calaculate and display number of books currently stored in book tree.
                 {
+                    bookTree.q2_DisplayNumberOfBooks();
+                }
+                else if (userInput == 5) //call method to insert new book into AVL tree
+                {
+                    string? titleNewBook = null;
+                    string? authorNewBook = null;
+                    int yearNewBook = -1;
+
+                    while (true)
+                    {
+
+                        Console.Write($"Please enter the Title of the book: ");
+                        titleNewBook = Console.ReadLine();
+
+                        if (titleNewBook.Count() == 0)
+                        {
+                            Console.WriteLine($"\n------------INVALID USER INPUT (enter a title for the book)------------");
+                            continue;
+                        }
+                        else 
+                        { 
+                            break;
+                        }
+                    }
+
+                    while (true)
+                    {
+
+                        Console.Write($"Please enter the Author of the book: ");
+                        authorNewBook = Console.ReadLine();
+
+                        if (authorNewBook.Count() == 0)
+                        {
+                            Console.WriteLine($"\n------------INVALID USER INPUT (enter a Author for the book)------------");
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    while (true)
+                    {
+
+                        Console.Write($"Please enter the Year of the book: ");
+
+                        try //try-catch block if user input was not an int value
+                        {
+                            yearNewBook = Convert.ToInt32(Console.ReadLine());
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"\n------------INVALID USER INPUT (enter an INTEGER year value)------------");
+                            continue;
+                        }
+
+                        if (yearNewBook <= 0) //user input error, ask for valid non negative user input
+                        {
+                            Console.WriteLine($"\n------------INVALID USER INPUT (enter a POSITIVE INTEGER year value)------------");
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    q1_Book newBook = new q1_Book(titleNewBook, authorNewBook, yearNewBook);
+
+                    bookTree.q1_InsertBook(newBook); //insert new book into tree
+
+                    Console.WriteLine($"\n------------Book inserted------------\n" +
+                        $"Title: {newBook.Title}\n" +
+                        $"Author: {newBook.Author}\n" +
+                        $"Publish date: {newBook.Year}\n");
 
                 }
-                else if(userInput == 5)
+                else if(userInput == 6) //option to break out of loop and close program
                 {
                     break;
                 }
                 else
                 {
-                    Console.WriteLine($"\n------------INVALID USER INPUT (enter an integer value from 1 to 5 only)------------");
+                    Console.WriteLine($"\n------------INVALID USER INPUT (enter an INTEGER value from 1 to 6 only)------------");
                 }
             }
         }
