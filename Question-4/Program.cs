@@ -4,6 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace Question_4
 {
+    public class Marker
+    {
+        //Please change "name" to any of the predefined ssort by criteria (name, nightly_rate, stars, distance_from_airport)
+        public string marker = "name"; //default sort hotels by names
+    }
+
     internal class Program
     {
         //create a hotel object that has attributes that match those of the json file data
@@ -15,7 +21,6 @@ namespace Question_4
             public int stars { get; set; }
             public int distance_from_airport { get; set; }
         }
-
 
         static void Main(string[] args)
         {
@@ -40,18 +45,14 @@ namespace Question_4
                 Console.WriteLine($"{JsonSerializer.Serialize(hotels)}");
             }
 
-            //to dynamically be able to sort hotels list based on marker input and not have to hard code if statements to find what I want to sort by
-
-            // changes "names" to whatever you want to sort according to (name, nightly_rate, stars or distance_from_airport)
-            /*string marker = "names"; //default sort hotels by names
-
-            PropertyInfo propertyInfo = hotels[0].GetType().GetProperty(marker);
-
-            Console.WriteLine(propertyInfo.GetValue(hotels[0], null));*/
+            //instantiate a string called marker that is equal to a new Marker object with an attribute marker
+            string marker = new Marker().marker;
 
             if (hotels.Count != 0 || hotels != null) //check if elements are present in array
             {
-                quickSort(hotels, 0, hotels.Count - 1);
+                Console.WriteLine($"\n-----------Hotels sorted by {marker}-----------");
+
+                quickSort(marker, hotels, 0, hotels.Count - 1);
             }
             else
             {
@@ -63,11 +64,10 @@ namespace Question_4
                 Console.WriteLine($"Hotel: {hotel.name}");
             }
         }
-        private static void quickSort(List<Hotel> hotels, int startIndex, int endIndex)
+        private static void quickSort(string marker, List<Hotel> hotels, int startIndex, int endIndex)
         {
-            var pivot = hotels[endIndex].name; // pivot value is equal to the value of element in last index of list
 
-            if (endIndex == startIndex) //termination point
+            if (endIndex <= startIndex) //termination point
             {
                 return;
             }
@@ -76,9 +76,33 @@ namespace Question_4
             int indexI = startIndex - 1;
 
 
-            while (indexJ != endIndex)
+            while (indexJ < endIndex)
             {
-                if (hotels[indexJ].name.CompareTo(pivot) == -1) // j is less than pivot
+                int compareResult = 0;
+
+                if (marker == "name")
+                {
+                    compareResult = hotels[indexJ].name.CompareTo(hotels[endIndex].name);
+                }
+                else if (marker == "nightly_rate")
+                {
+                    compareResult = hotels[indexJ].nightly_rate.CompareTo(hotels[endIndex].nightly_rate);
+                }
+                else if (marker == "stars")
+                {
+                    compareResult = hotels[indexJ].stars.CompareTo(hotels[endIndex].stars);
+                }
+                else if (marker == "distance_from_airport")
+                {
+                    compareResult = hotels[indexJ].distance_from_airport.CompareTo(hotels[endIndex].distance_from_airport);
+                }
+                else
+                {
+                    Console.WriteLine($"\n-----------Error occured, incorrect marker given, it does not match exsiting sort by criteria-----------");
+                    return;
+                }
+
+                if (compareResult == -1) // j is less than endIndex value
                 {
                     indexI++;
 
@@ -89,7 +113,7 @@ namespace Question_4
                     hotels[indexJ] = tempStorage;
 
                 }
-                indexJ++;
+                indexJ++; //j not less than endIndex value
             }
 
             // put pivot at index position it needs to be for all values left to be smaller and all values right to be greater or equal
@@ -100,12 +124,6 @@ namespace Question_4
             hotels[indexI] = hotels[indexJ];
             hotels[indexJ] = temp;
 
-            //end recursion when partition would be smaller or equal to one.
-            if (endIndex - startIndex <= 2)
-            {
-                return;
-            }
-
             // new indices for left and right hand of pivot
             int leftStartIndex = startIndex;
             int leftEndIndex = indexI - 1;
@@ -113,8 +131,8 @@ namespace Question_4
             int rightStartIndex = indexI + 1;
             int rightEndIndex = endIndex;
 
-            quickSort(hotels, leftStartIndex, leftEndIndex);
-            quickSort(hotels, rightStartIndex, rightEndIndex);
+            quickSort(marker, hotels, leftStartIndex, leftEndIndex);
+            quickSort(marker, hotels, rightStartIndex, rightEndIndex);
         }
     }
 }
