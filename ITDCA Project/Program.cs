@@ -644,29 +644,33 @@ namespace Question_1
                 }
                 else if (userInput == 2) //call method to search for book that matches the year the user inputted
                 {
-                    Console.WriteLine($"\n------------Search by Year------------\n");
-                    Console.Write($"Please input a year value: ");
+                    while (true)
+                    {
+                        Console.WriteLine($"\n------------Search by Year------------\n");
+                        Console.Write($"Please input a year value: ");
 
-                    int yearSearch = 0;
+                        int yearSearch = 0;
 
-                    try //try-catch block if user input was not an int value
-                    {
-                        yearSearch = Convert.ToInt32(Console.ReadLine());
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine($"\n------------INVALID USER INPUT (enter an INTEGER year value)------------");
-                        continue;
-                    }
+                        try //try-catch block if user input was not an int value
+                        {
+                            yearSearch = Convert.ToInt32(Console.ReadLine());
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine($"\n------------INVALID USER INPUT (enter an INTEGER year value)------------");
+                            continue;
+                        }
 
-                    if (yearSearch < 0) //if value negative also throw error
-                    {
-                        Console.WriteLine($"\n------------INVALID USER INPUT (enter an POSITIVE year value)------------");
-                        continue;
-                    }
-                    else //call search book method
-                    {
-                        bookTree.q2_SearchBookByYear(yearSearch);
+                        if (yearSearch < 0) //if value negative also throw error
+                        {
+                            Console.WriteLine($"\n------------INVALID USER INPUT (enter an POSITIVE year value)------------");
+                            continue;
+                        }
+                        else //call search book method
+                        {
+                            bookTree.q2_SearchBookByYear(yearSearch);
+                            break;
+                        }
                     }
 
                 }
@@ -726,7 +730,7 @@ namespace Question_1
                         {
                             yearNewBook = Convert.ToInt32(Console.ReadLine());
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             Console.WriteLine($"\n------------INVALID USER INPUT (enter an INTEGER year value)------------");
                             continue;
